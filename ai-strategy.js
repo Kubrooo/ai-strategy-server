@@ -5,7 +5,7 @@ import cors from "cors";
 
 const app = express();
 app.use(express.json());
-app.use(cors()); // biar bisa diakses dari frontend
+app.use(cors());
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -37,4 +37,5 @@ app.post("/strategy", async (req, res) => {
   }
 });
 
-app.listen(4000, () => console.log("🚦 AI Strategy API running at http://localhost:4000"));
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`🚦 AI Strategy API running on port ${PORT}`));
