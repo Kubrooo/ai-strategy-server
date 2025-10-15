@@ -1,10 +1,11 @@
 {
   "name": "ai-strategy-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "AI-powered race strategy backend for PitWall",
   "main": "ai-strategy.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ai-strategy.js"
   },
   "author": "Ardiansyah",
   "license": "ISC",

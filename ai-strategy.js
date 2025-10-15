@@ -1,6 +1,6 @@
 import express from "express";
 import Replicate from "replicate";
-import 'dotenv/config';
+import "dotenv/config";
 import cors from "cors";
 
 const app = express();
@@ -14,19 +14,41 @@ const replicate = new Replicate({
 app.post("/strategy", async (req, res) => {
   const { leclerc, lewis, lap } = req.body;
 
+  // Cek status masing-masing pembalap
+  const leclercStatus =
+    leclerc.status !== "DNF"
+      ? `avg speed ${leclerc.speed.toFixed(
+          1
+        )} km/h, tire wear ${leclerc.tireWear.toFixed(
+          1
+        )}%, fuel left ${leclerc.fuel.toFixed(1)}%.`
+      : "did not finish (DNF).";
+
+  const lewisStatus =
+    lewis.status !== "DNF"
+      ? `avg speed ${lewis.speed.toFixed(
+          1
+        )} km/h, tire wear ${lewis.tireWear.toFixed(
+          1
+        )}%, fuel left ${lewis.fuel.toFixed(1)}%.`
+      : "did not finish (DNF).";
+
   const prompt = `
   You are an F1 race strategist.
   The race has just finished.
-  Charles Leclerc: avg speed ${leclerc.speed.toFixed(1)} km/h, tire wear ${leclerc.tireWear.toFixed(1)}%, fuel left ${leclerc.fuel.toFixed(1)}%.
-  Lewis Hamilton: avg speed ${lewis.speed.toFixed(1)} km/h, tire wear ${lewis.tireWear.toFixed(1)}%, fuel left ${lewis.fuel.toFixed(1)}%.
+  Charles Leclerc: ${leclercStatus}
+  Lewis Hamilton: ${lewisStatus}
   Provide a short race analysis (max 3 sentences) summarizing performance and key pit strategy insights.
   `;
 
   try {
     let response = "";
-    for await (const event of replicate.stream("ibm-granite/granite-3.3-8b-instruct", {
-      input: { prompt, max_tokens: 100 },
-    })) {
+    for await (const event of replicate.stream(
+      "ibm-granite/granite-3.3-8b-instruct",
+      {
+        input: { prompt, max_tokens: 100 },
+      }
+    )) {
       response += event.toString();
     }
 
@@ -38,4 +60,6 @@ app.post("/strategy", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`🚦 AI Strategy API running on port ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚦 AI Strategy API running on port ${PORT}`)
+);
